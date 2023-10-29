@@ -1,18 +1,12 @@
+import { Box, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React from "react";
-import {
-  checkProductIsExist,
-  editProduct,
-  registerProduct,
-} from "../../api/productApi";
-import EditProductForm from "./componnents/EditProductForm";
-import { Box, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { checkProductIsExist, editProduct } from "../../api/productApi";
+import EditProductForm from "./componnents/EditProductForm";
 
 const EditProduct = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const user = useSelector((state) => state.users.currentUser);
   const navigate = useNavigate();
   const handleSubmitForm = async (data, srcImage, id) => {
     console.log(id, "id ");

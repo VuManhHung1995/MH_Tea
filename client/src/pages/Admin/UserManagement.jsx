@@ -94,9 +94,9 @@ function UserManagement() {
         variant="0"
         sx={{
           mt: "20px",
-          height: "330px",
-          overflow: "scroll",
-          "&::-webkit-scrollbar": { display: "none" },
+          // height: "330px",
+          // overflow: "scroll",
+          // "&::-webkit-scrollbar": { display: "none" },
         }}
       >
         <TableUser listUser={listUser} loadData={loadData} />

@@ -1,10 +1,10 @@
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Box, Grid } from "@mui/material";
 import React from "react";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-import ListCart from "./components/ListCart";
 import { useSelector } from "react-redux";
 import AccumulatorCart from "./components/AccumulatorCart";
+import ListCart from "./components/ListCart";
 
 function Cart() {
   const carts = useSelector((state) => state.carts.cart);

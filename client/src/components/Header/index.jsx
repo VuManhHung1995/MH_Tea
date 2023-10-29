@@ -78,23 +78,6 @@ function Header() {
         )}
       </Box>
       <Box sx={{ display: "flex", alignItems: "center" }}>
-        {user.role || user.role === 0 ? (
-          <AccountMenu
-            avata={
-              <Avatar
-                sx={{
-                  bgcolor: "rgba(34, 197, 94, 0.8)",
-                }}
-              >
-                {user.firstName[0].toUpperCase()}
-              </Avatar>
-            }
-            user={user}
-          />
-        ) : (
-          <AccountMenu avata={<AccountCircleIcon />} user={user} />
-        )}
-
         {user?.role === 0 ? (
           <IconButton
             size="large"
@@ -112,6 +95,23 @@ function Header() {
           </IconButton>
         ) : (
           <></>
+        )}
+
+        {user.role || user.role === 0 ? (
+          <AccountMenu
+            avata={
+              <Avatar
+                sx={{
+                  bgcolor: "rgba(34, 197, 94, 0.8)",
+                }}
+              >
+                {user.firstName[0].toUpperCase()}
+              </Avatar>
+            }
+            user={user}
+          />
+        ) : (
+          <AccountMenu avata={<AccountCircleIcon />} user={user} />
         )}
       </Box>
     </Box>

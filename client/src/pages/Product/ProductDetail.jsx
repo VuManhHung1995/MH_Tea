@@ -1,8 +1,15 @@
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import CoffeeIcon from "@mui/icons-material/Coffee";
+import MoodIcon from "@mui/icons-material/Mood";
+import SendIcon from "@mui/icons-material/Send";
+import { changeDateToSql } from "../../common-function/formatDate";
+
 import {
   Box,
   Button,
   Button as ButtonMui,
+  Divider,
   Grid,
   Typography,
 } from "@mui/material";
@@ -14,6 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { registerCart } from "../../api/cartApi";
 import { convertBufferToBase64 } from "../../common-function/getBase64";
 
+import { addComment, getListComment } from "../../api/commentApi";
 import {
   getListProductSize,
   getListProductTopping,
@@ -21,6 +29,7 @@ import {
   getProductById,
 } from "../../api/productApi";
 import { verifyUser } from "../../common-function/checkUserIsExist";
+import Comment from "./components/Comment";
 
 function ProductDetail() {
   const [product, setProduct] = useState({});
@@ -31,6 +40,8 @@ function ProductDetail() {
   const [listTopping, setListTopping] = useState([]);
   const [activeTopping, setActiveTopping] = useState([]);
   const [optionPrice, setOptionPrice] = useState(0);
+  const [comment, setComment] = useState("");
+  const [listComent, setListComment] = useState([]);
 
   const navigate = useNavigate();
 
@@ -75,7 +86,14 @@ function ProductDetail() {
     );
     setOptionPrice(total);
   }, [activeSize, activeTopping]);
-
+  // Lay thong tin comment
+  useEffect(() => {
+    const loadComment = async () => {
+      const comments = await getListComment(id);
+      setListComment(comments.data.data);
+    };
+    loadComment();
+  }, [id]);
   // Xu li them san pham vao gio hang
   const handleAddCart = async () => {
     // Kiem tra xem user con dang nhap khong
@@ -175,6 +193,38 @@ function ProductDetail() {
       }
       return [...state, topping];
     });
+  };
+
+  // Lay thong tin comment
+  const handlePostComment = async () => {
+    if (comment) {
+      try {
+        const isCheckExistUser = await verifyUser(user.email);
+        if (isCheckExistUser) {
+          const myComment = {
+            productCode: id,
+            userCode: user.userCode,
+            content: comment,
+            createdDate: changeDateToSql(new Date()),
+          };
+          await addComment(myComment);
+          setComment("");
+          const comments = await getListComment(id);
+          setListComment(comments.data.data);
+        } else {
+          enqueueSnackbar("Login to add comment", {
+            variant: "error",
+            autoHideDuration: 2000,
+            anchorOrigin: { vertical: "top", horizontal: "right" },
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      // Xu li validate khi chua nhap comment
+      console.log("chua comment gi");
+    }
   };
   return (
     <Box
@@ -325,6 +375,86 @@ function ProductDetail() {
             Thêm vào giỏ hàng
           </Box>
         </Grid>
+        <Grid item xs={12} sx={{ mt: "60px", mb: "30px" }}>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>
+            Mô tả sản phẩm
+          </Typography>
+          <Typography sx={{ mt: "10px" }}>{product.description}</Typography>
+        </Grid>
+        <Grid item xs={12} sx={{ mt: "60px", mb: "30px" }}>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>
+            Đánh giá sản phẩm
+          </Typography>
+          <Box
+            component="textarea"
+            rows={4}
+            width="100%"
+            sx={{ outline: "none", mt: "30px", p: "10px" }}
+            placeholder="Hãy để lại một vài đánh giá cho sản phẩm...."
+            onChange={(e) => setComment(e.target.value)}
+            value={comment}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <AddPhotoAlternateIcon
+              sx={{
+                fontSize: "24px",
+                m: "0 4px",
+                ":hover": { cursor: "pointer" },
+              }}
+            />
+            <AttachFileIcon
+              sx={{
+                fontSize: "24px",
+                mr: "4px",
+                ":hover": { cursor: "pointer" },
+              }}
+            />
+            <MoodIcon
+              sx={{ fontSize: "24px", ":hover": { cursor: "pointer" } }}
+            />
+          </Box>
+          <Button
+            variant="outlined"
+            endIcon={<SendIcon />}
+            sx={{
+              bgcolor: "rgb(0, 167, 111)",
+              color: "white",
+              p: "10px",
+              mt: "20px",
+              borderRadius: "8px",
+              ":hover": {
+                outline: "none",
+                bgcolor: "rgb(0, 167, 111, 0.8)",
+                color: "white",
+              },
+            }}
+            onClick={handlePostComment}
+          >
+            Post Comment
+          </Button>
+        </Grid>
+        <Grid item xs={12} sx={{ mt: "30px", mb: "30px" }}>
+          <Divider />
+        </Grid>
+        {listComent.map((item) => (
+          <Comment comment={item} />
+        ))}
       </Grid>
     </Box>
   );

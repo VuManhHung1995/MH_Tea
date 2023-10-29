@@ -10,6 +10,8 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const emailRoute = require("./src/routes/email.route");
+const commentRoute = require("./src/routes/comment.route");
 const port = 8080;
 
 dotenv.config();
@@ -32,5 +34,7 @@ app.use("/api/v1/products", productRoute);
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/carts", cartRoute);
 app.use("/api/v1/orders", orderRoute);
+app.use("/api/v1/email", emailRoute);
+app.use("/api/v1/comments", commentRoute);
 
 app.listen(port, () => console.log(`Ban dang lang nghe port ${port}`));

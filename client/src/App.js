@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes, useLocation } from "react-router-dom";
+
 import "./App.css";
 import { getCartsByUser } from "./api/cartApi";
 import { checkUserIsExist, verifyToken } from "./api/userApi";
@@ -11,6 +12,7 @@ import Admin from "./pages/Admin";
 import AddProduct from "./pages/Admin/AddProduct";
 import EditProduct from "./pages/Admin/EditProduct";
 import ListProductAdmin from "./pages/Admin/ListProduct";
+import OrderProduct from "./pages/Admin/OrderProduct";
 import UserManagement from "./pages/Admin/UserManagement";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
@@ -19,7 +21,9 @@ import Cart from "./pages/Cart";
 import cartSlice from "./pages/Cart/cartSlice";
 import ListProduct from "./pages/Product/ListProduct";
 import ProductDetail from "./pages/Product/ProductDetail";
-import OrderProduct from "./pages/Admin/OrderProduct";
+import Order from "./pages/Order";
+import ListOrder from "./pages/Order/ListOrder";
+import OrderSuccess from "./pages/Order/OrderSuccess";
 
 // role 0 : user
 // role 1 : admin
@@ -131,6 +135,17 @@ function App() {
                     </DefaultLayout>
                   }
                 />
+                <Route
+                  path="/order"
+                  element={
+                    <DefaultLayout>
+                      <Order />
+                    </DefaultLayout>
+                  }
+                >
+                  <Route index element={<ListOrder />} />
+                  <Route path="success" element={<OrderSuccess />} />
+                </Route>
               </>
             )}
           </>

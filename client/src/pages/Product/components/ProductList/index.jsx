@@ -1,12 +1,11 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { getAllProduct } from "../../../../api/productApi";
-import ProductItem from "../ProductItem";
 import { convertBufferToBase64 } from "../../../../common-function/getBase64";
+import ProductItem from "../ProductItem";
 
 function ProductList() {
   const [listProduct, setListProduct] = useState([]);
-  const [page, setPage] = useState(1);
   const loadData = async () => {
     try {
       const listProduct = await getAllProduct();
@@ -46,9 +45,6 @@ function ProductList() {
           ))}
         </Grid>
       </Box>
-      {/* <Box sx={{ display: "flex", justifyContent: "center", mt: "20px" }}>
-        <Button onClick={() => {}}>Xem thêm</Button>
-      </Box> */}
     </Box>
   );
 }

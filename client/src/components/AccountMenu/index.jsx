@@ -1,5 +1,6 @@
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -34,6 +35,10 @@ export default function AccountMenu({ avata, user }) {
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleCloseOrder = () => {
+    setAnchorEl(null);
+    navigate("/order");
   };
   return (
     <React.Fragment>
@@ -87,6 +92,16 @@ export default function AccountMenu({ avata, user }) {
               </ListItemIcon>
               Settings
             </MenuItem>
+            {user.role === 0 ? (
+              <MenuItem onClick={handleCloseOrder}>
+                <ListItemIcon>
+                  <ShoppingCartIcon fontSize="small" />
+                </ListItemIcon>
+                My Order
+              </MenuItem>
+            ) : (
+              <></>
+            )}
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <Logout fontSize="small" />

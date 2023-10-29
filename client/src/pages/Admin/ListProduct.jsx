@@ -36,7 +36,6 @@ function ListProduct() {
       console.log(error);
     }
   };
-  console.log("list", listProduct);
   const handleChangeNameSearch = (e) => {
     const nameSearch = e.target.value;
     const filters = {
@@ -57,7 +56,7 @@ function ListProduct() {
     });
   };
   return (
-    <Box sx={{ flex: 1, ml: "320px", mr: "40px", mt: "80px" }}>
+    <Box sx={{ flex: 1, ml: "320px", mr: "40px", mt: "80px", mb: "40px" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h5">Product List</Typography>
         <Button
@@ -88,9 +87,9 @@ function ListProduct() {
         variant="0"
         sx={{
           mt: "20px",
-          height: "330px",
-          overflow: "scroll",
-          "&::-webkit-scrollbar": { display: "none" },
+          // height: "330px",
+          // overflow: "scroll",
+          // "&::-webkit-scrollbar": { display: "none" },
         }}
       >
         <TableProduct listProduct={listProduct} loadData={loadData} />

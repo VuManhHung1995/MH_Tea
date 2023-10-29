@@ -92,13 +92,15 @@ export default function TableProduct({ listProduct, loadData }) {
                   component="img"
                   src={convertBufferToBase64(row.srcImage)}
                   sx={{
-                    width: "60px",
-                    height: "60px",
+                    width: "50px",
+                    height: "50px",
                     borderRadius: "12px",
                     mr: "10px",
                   }}
                 />
-                <Typography>{row.productName}</Typography>
+                <Typography sx={{ fontSize: "13px" }}>
+                  {row.productName}
+                </Typography>
               </TableCell>
               <TableCell>{row.categoryName}</TableCell>
               <TableCell>

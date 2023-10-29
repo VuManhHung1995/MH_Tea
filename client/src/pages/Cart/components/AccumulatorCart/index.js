@@ -1,14 +1,16 @@
-import { Box, Button, Divider } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import InputField from "../../../../components/form-controls/InputField";
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { Box, Button, Divider } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { verifyUser } from "../../../../common-function/checkUserIsExist";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import * as yup from "yup";
 import { registerOrder } from "../../../../api/orderApi";
+import { verifyUser } from "../../../../common-function/checkUserIsExist";
+import InputField from "../../../../components/form-controls/InputField";
 import cartSlice from "../../cartSlice";
+import { useNavigate } from "react-router-dom";
+import { sendMail } from "../../../../api/mailApi";
 
 const schema = yup
   .object({
@@ -27,6 +29,7 @@ function AccumulatorCart() {
   const statusCheckBox = useSelector((state) => state.carts.statusCheckBox);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -55,30 +58,45 @@ function AccumulatorCart() {
   }, [accumulatorCarts]);
 
   const onSubmit = async (data) => {
-    if (statusCheckBox.length === 0) {
-      enqueueSnackbar(`No products have been selected yet`, {
-        variant: "warning",
-        autoHideDuration: 2000,
-        anchorOrigin: { vertical: "top", horizontal: "right" },
-      });
-    } else {
-      const isCheckExistUser = await verifyUser(user.email);
-      if (isCheckExistUser) {
-        const response = await registerOrder(accumulatorCarts, user, data);
-        if (response.data.status === 201) {
-          // Xoa thong tin cart va topping tren store
-          accumulatorCarts.forEach((item) => {
-            dispatch(cartSlice.actions.deleteCart(item.cartCode));
-          });
-          dispatch(cartSlice.actions.updateStatusCheckbox([]));
-        }
-      } else {
-        enqueueSnackbar("Login to add product to cart", {
-          variant: "error",
+    try {
+      if (statusCheckBox.length === 0) {
+        enqueueSnackbar(`No products have been selected yet`, {
+          variant: "warning",
           autoHideDuration: 2000,
           anchorOrigin: { vertical: "top", horizontal: "right" },
         });
+      } else {
+        const isCheckExistUser = await verifyUser(user.email);
+        if (isCheckExistUser) {
+          const response = await registerOrder(
+            accumulatorCarts,
+            user,
+            data,
+            totals
+          );
+          if (response.data.status === 201) {
+            // Xoa thong tin cart va topping tren store
+            accumulatorCarts.forEach((item) => {
+              dispatch(cartSlice.actions.deleteCart(item.cartCode));
+            });
+            dispatch(cartSlice.actions.updateStatusCheckbox([]));
+            navigate("/order/success");
+            // send email dat hang thanh cong
+            await sendMail({
+              email: user.email,
+              name: `${user.lastName} ${user.firstName}`,
+            });
+          }
+        } else {
+          enqueueSnackbar("Login to add product to cart", {
+            variant: "error",
+            autoHideDuration: 2000,
+            anchorOrigin: { vertical: "top", horizontal: "right" },
+          });
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 

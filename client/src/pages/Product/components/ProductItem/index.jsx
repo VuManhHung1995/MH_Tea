@@ -1,13 +1,13 @@
-import { Box, Button, Link, Typography } from "@mui/material";
-import React from "react";
-import { Link as LinkRouter, useNavigate } from "react-router-dom";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { verifyUser } from "../../../../common-function/checkUserIsExist";
-import { useDispatch, useSelector } from "react-redux";
-import { getListProductToppingOfCart } from "../../../../api/productApi";
-import { getCartsByUser, registerCart } from "../../../../api/cartApi";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Box, Button, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getCartsByUser, registerCart } from "../../../../api/cartApi";
+import { getListProductToppingOfCart } from "../../../../api/productApi";
+import { verifyUser } from "../../../../common-function/checkUserIsExist";
 import cartSlice from "../../../Cart/cartSlice";
 
 function ProductItem({ src, name, price, id }) {

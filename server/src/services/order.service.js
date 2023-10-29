@@ -1,9 +1,13 @@
 const pool = require("../connection/connectionMySQL2");
+const database = require("../connection/connectionMySQL");
 const { v4 } = require("uuid");
+
 const registerOrder = async (
   orderCode,
+  userCode,
   accumulatorCarts,
   data,
+  totals,
   createDate,
   createBy
 ) => {
@@ -11,12 +15,15 @@ const registerOrder = async (
   try {
     await connection.beginTransaction();
     //   them thong tin vao bang oder
-    let queryStringAddOrder = `INSERT INTO orders (orderCode,recevierName, phone, adress, createBy, createDate) VALUES (?,?,?,?,?,?)`;
+    let queryStringAddOrder = `INSERT INTO orders (orderCode,userCode,recevierName, phone, adress,totals,quantity, createBy, createDate) VALUES (?,?,?,?,?,?,?,?,?)`;
     let orders = [
       orderCode,
+      userCode,
       data.recevierName,
       data.phoneNumber,
       data.adress,
+      totals,
+      accumulatorCarts.length,
       createBy,
       createDate,
     ];
@@ -87,4 +94,108 @@ const registerOrder = async (
   }
 };
 
-module.exports = { registerOrder };
+const getAllOrder = (nameSearch, limit, offset, res) => {
+  //   Khai bao cau query
+  let queryString = `SELECT * from orders`;
+  // gan them gia tri search
+  if (nameSearch) {
+    queryString += ` WHERE recevierName like '%${nameSearch}%' or phone like '%${nameSearch}%'`;
+  }
+  const countString = queryString;
+  queryString += ` LIMIT ${limit} OFFSET ${offset}`;
+  // goi vao database
+  database.query(queryString, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        status: 500,
+        error: err,
+      });
+    } else {
+      database.query(countString, (err, resultCount) => {
+        if (err) {
+          return res.status(500).json({
+            status: 500,
+            error: err,
+          });
+        } else {
+          return res.status(200).json({
+            status: 200,
+            data: result,
+            count: resultCount.length,
+          });
+        }
+      });
+    }
+  });
+};
+
+const getOrderDetail = (orderCode, res) => {
+  let queryString = `select * from orderDetail as od
+                    join products as p
+                    on od.productCode = p.productCode
+                    join productSize as pz
+                    on pz.productSizeId =  od.productSizeId
+                    where orderCode = ?`;
+  database.query(queryString, [orderCode], (error, result) => {
+    if (error) {
+      return res.status(500).json({
+        status: 500,
+        error: err,
+      });
+    } else {
+      return res.status(200).json({
+        status: 200,
+        data: result,
+      });
+    }
+  });
+};
+
+const getAllToppingByOrderDetail = (orderDetailCode, res) => {
+  let queryString = `select * from productAndToppingOfOrder as patoo join productTopping as pt
+                    on patoo.productToppingId = pt.productToppingId
+                    where orderDetailCode = ?`;
+  database.query(queryString, [orderDetailCode], (error, result) => {
+    if (error) {
+      return res.status(500).json({
+        status: 500,
+        error: err,
+      });
+    } else {
+      return res.status(200).json({
+        status: 200,
+        data: result,
+      });
+    }
+  });
+};
+const getAllOrderDetailByUser = (userCode, res) => {
+  let queryString = `select * from orders as o
+                    join orderDetail as od
+                    on o.orderCode = od.orderCode
+                    join products as p
+                    on od.productCode = p.productCode
+                    join productSize as pz
+                    on pz.productSizeId =  od.productSizeId
+                    where userCode = ?`;
+  database.query(queryString, [userCode], (error, result) => {
+    if (error) {
+      return res.status(500).json({
+        status: 500,
+        error: error,
+      });
+    } else {
+      return res.status(200).json({
+        status: 200,
+        data: result,
+      });
+    }
+  });
+};
+module.exports = {
+  registerOrder,
+  getAllOrder,
+  getOrderDetail,
+  getAllToppingByOrderDetail,
+  getAllOrderDetailByUser,
+};
